@@ -1,0 +1,15 @@
+Gemfile.lock
+.DS_Store
+.yardoc/
+.idea
+.rspec_status
+.rvmrc
+*.gem
+*.swp
+/.bundle
+
+doc/
+tmp/
+log/
+pkg/
+coverage

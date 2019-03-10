@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'yourl_cli/validators'
+require 'yourl_cli/api_key'
+require 'yourl_cli'
+
+def validate_setup
+  key_manager = YourlCli::APIKey.new
+
+  unless key_manager && key_manager.valid_api_key?
+    raise 'Set up has not been completed, or has an invalid key.' \
+    'Please rerun setup (yourl_cli -s)'
+  end
+
+  YourlCli.logger.info 'Account testing completed correctly'
+end
+
+def validate_options(opts)
+  unless opts.key?(:url) && YourlCli::Validators.valid_url?(opts[:url])
+    YourlCli.logger.error 'Please pass a valid URL using flags -u [URL] or --url [URL]'
+    exit
+  end
+end
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = 'Usage: yourl_cli [options]'
+
+  opts.on '-s', '--setup', 'Set up yourl integration' do
+    YourlCli.logger.info 'Please enter API key: '
+    api_key = gets
+
+    api_key = YourlCli::APIKey.save_api_key(api_key.chomp)
+    api_key.valid_api_key?
+    exit
+  end
+
+  opts.on '-u url', '--url=url', 'URL to store'
+  opts.on '-c cat', '--category=cat', 'Category to add it to'
+  opts.on('-h', '--help', 'Prints this help') do
+    puts opts
+    exit
+  end
+end.parse!(into: options)
+
+validate_setup
+validate_options(options)
+
+# puts option_parser
+# option_parser
+# p options
